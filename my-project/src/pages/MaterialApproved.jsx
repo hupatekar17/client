@@ -1,171 +1,286 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 
-
-const MaterialApprovedTable = () => {
-  const [rows, setRows] = useState([
-    { id: 1, pendingIssue: '', documentType: '', status: 'Pending' },
+const MaterialApproved = () => {
+  // State for Façade Work Table Rows
+  const [façadeWorkRows, setFaçadeWorkRows] = useState([
+    {
+      slNo: 1,
+      item: 'Aluminium Extrusions - Alum Framed elements - Brackets - Louvers',
+      docs: 'Submit supplier information and details, (manufacturers details). Mill certificate of extrusions for strength, size, finish, grades and structural properties of Billets for each lot. Hardness test for each lot. Submit samples-200 length (male & female) for fitment checks. Third party test for chemical and physical properties.',
+      docType: 'Information, Certificate, Sample',
+      comment: '',
+    },
+    {
+      slNo: 2,
+      item: 'Cladding Solid Aluminium Sheet',
+      docs: 'Supplier. Make, grade. Samples- 300mm x 300mm- per make and colour.',
+      docType: 'Information, Certificate, Samples',
+      comment: '',
+    },
+    {
+      slNo: 3,
+      item: 'Spandrel Back Pans and Cement Board (Painted)',
+      docs: 'Material. Finishing & Application Method. Samples- 300mm x 300mm- 3nos.',
+      docType: 'Information, MTD statement, Samples',
+      comment: '',
+    },
+    {
+      slNo: 4,
+      item: 'Finish to Aluminium Extrusions',
+      docs: 'Applicator name and information. QA/QC tests as per specification to be conducted. Third party tests for Finishes/Coating have to be done in presence of BES. Samples- 300mm, 3nos.',
+      docType: 'Information, Test certificates, Laboratory Tests, Samples',
+      comment: '',
+    },
+    {
+      slNo: 5,
+      item: 'Glass',
+      docs: 'Supplier. Processor should comply tender specification. Samples- 300mm x 300mm for selection of shade and colour then Final Approval will be done upon review of big size sample for visual aspects.',
+      docType: 'Information, Certificates, Samples',
+      comment: '',
+    },
+    {
+      slNo: 6,
+      item: 'Sealants - Weather',
+      docs: 'Supplier. Types of sealants.',
+      docType: 'Information, Material Certificates',
+      comment: '',
+    },
+    {
+      slNo: 7,
+      item: 'Sealants - Structural',
+      docs: 'Supplier. Laboratory tests - Physical and Chemical (Adhesive, shore hardness along with general QA QC tests as recommended by manufacturers).',
+      docType: 'Information, Test Certificates',
+      comment: '',
+    },
+    {
+      slNo: 8,
+      item: 'Glass Fittings',
+      docs: 'Make. Laboratory Tests- Physical and Chemical tests (Steel Grade tests Dry/Wet), Hardness, Load bearing capacity, tensile/compressive capacities Or Manufacturers Test certificates material grade mentioned with structural strengths etc..). Samples- Typical fittings.',
+      docType: 'Information, Manufacturers/ laboratory certificates, Samples',
+      comment: '',
+    },
+    {
+      slNo: 9,
+      item: 'Gaskets & Spacers',
+      docs: 'Material type. Physical and chemical properties. Samples-100mm length for each type.',
+      docType: 'Information, Certificates, Samples',
+      comment: '',
+    },
+    {
+      slNo: 10,
+      item: 'Insulation / Rockwool',
+      docs: 'Material type. Supplier. Density certificates.',
+      docType: 'Information, Certificates',
+      comment: '',
+    },
+    {
+      slNo: 11,
+      item: 'Window / Door Accessories',
+      docs: 'Make. Supplier information. Structural strengths and load bearing capacities of hardware. Samples- Each type of hardware.',
+      docType: 'Information, Test certificates, Samples',
+      comment: '',
+    },
+    {
+      slNo: 12,
+      item: 'Expanded Mesh',
+      docs: 'Make. Supplier information. Samples.',
+      docType: 'Information, Test certificates, Samples',
+      comment: '',
+    },
   ]);
 
-  const handleAddRow = () => {
-    const newRow = { id: rows.length + 1, pendingIssue: '', documentType: '', status: 'Pending' };
-    setRows([...rows, newRow]);
+  // State for Façade Steel Work Comments
+  const [façadeSteelWorkComments, setFaçadeSteelWorkComments] = useState({
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  });
+
+  const handleFaçadeSteelWorkCommentChange = (index, value) => {
+    setFaçadeSteelWorkComments(prev => ({
+      ...prev,
+      [index]: value,
+    }));
   };
 
-  const handleDeleteRow = (id) => {
-    setRows(rows.filter(row => row.id !== id));
+  // Add a new row to the Façade Work table
+  const addRow = (index) => {
+    const newRows = [...façadeWorkRows];
+    const newRow = {
+      slNo: newRows.length + 1,
+      item: '',
+      docs: '',
+      docType: '',
+      comment: '',
+    };
+    newRows.splice(index + 1, 0, newRow);
+    setFaçadeWorkRows(newRows);
   };
 
-  const handlePendingIssueChange = (id, event) => {
-    const newRows = rows.map(row => {
-      if (row.id === id) {
-        return { ...row, pendingIssue: event.target.value };
-      }
-      return row;
+  // Remove a row from the Façade Work table
+  const removeRow = (index) => {
+    if (window.confirm("Are you sure you want to delete this row?")){
+    if (façadeWorkRows.length > 1) {
+      const newRows = [...façadeWorkRows];
+      newRows.splice(index, 1);
+      setFaçadeWorkRows(newRows);
+    }
+    }
+  };
+
+  // Handle changes to the new row form
+  const handleNewRowChange = (e) => {
+    const { name, value } = e.target;
+    setNewRow(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleNewRowSubmit = (e) => {
+    e.preventDefault();
+    setFaçadeWorkRows(prev => [
+      ...prev,
+      {
+        slNo: prev.length + 1,
+        item: newRow.item,
+        docs: newRow.docs,
+        docType: newRow.docType,
+        comment: newRow.comment,
+      },
+    ]);
+    setNewRow({
+      item: '',
+      docs: '',
+      docType: '',
+      comment: '',
     });
-    setRows(newRows);
   };
 
-  const handleDocumentTypeChange = (id, event) => {
-    const newRows = rows.map(row => {
-      if (row.id === id) {
-        return { ...row, documentType: event.target.value };
-      }
-      return row;
-    });
-    setRows(newRows);
-  };
-
-  const handleStatusChange = (id, event) => {
-    const newRows = rows.map(row => {
-      if (row.id === id) {
-        return { ...row, status: event.target.value };
-      }
-      return row;
-    });
-    setRows(newRows);
-  };
-
-  const handleSubmit = () => {
-    // Your submit logic goes here
-    console.log('Form submitted');
-  };
+  // State for new row in Façade Work Table
+  const [newRow, setNewRow] = useState({
+    item: '',
+    docs: '',
+    docType: '',
+    comment: '',
+  });
 
   return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Material Approval</h1>
 
-    <div className="container">
-    <div className="flex justify-between items-center mb-4">
-      <Link to="/">
-        <button className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-          Bes Consultants
-        </button>
-      </Link>
-      <div className="flex space-x-4">
-        <Link to="/qaqc">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            QAQC
-          </button>
-        </Link>
-        <Link to="/material">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            Material
-          </button>
-        </Link>
-        <Link to="/drawing">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            Drawing
-          </button>
-        </Link>
-      </div>
-    </div>
-
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="bg-gray-200 w-1/6 p-4 h-full">
-        {/* Add your sidebar content here */}
-        <h2 className="text-xl font-bold mb-4">Projects</h2>
-        {/* Placeholder for empty sidebar */}
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 container mx-auto">
-        <h1 className="text-3xl font-bold text-teal-500 mb-4">Material Approved</h1>
-        <button className="bg-blue-500 text-white font-bold py-2 px-4 mb-4" onClick={handleAddRow}>Add</button>
-        <table className="table-auto w-full border-collapse border border-gray-200">
-          <thead className="bg-gray-100">
-            <tr className="text-gray-800">
-              <th className="px-4 py-2">Sr.No</th>
-              <th className="px-4 py-2">Element/Item</th>
-              <th className="px-4 py-2">Document/Sample</th>
-              <th className="px-4 py-2">Document Type</th>
-              <th className="px-4 py-2">BES Comment</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Actions</th>
+      {/* Façade Work Table */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Façade Work Document Submission</h2>
+        <table className="min-w-full bg-white border border-gray-300 rounded-md shadow-md">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="p-3 text-left border-b border-gray-300">SL No</th>
+              <th className="p-3 text-left border-b border-gray-300">Element/Items</th>
+              <th className="p-3 text-left border-b border-gray-300">Documents/Samples to be Submitted</th>
+              <th className="p-3 text-left border-b border-gray-300">Document Type</th>
+              <th className="p-3 text-left border-b border-gray-300">BES Comment</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map(row => (
-              <tr key={row.id}>
-                <td className="border px-4 py-2">{row.id}</td>
-                <td className="border px-4 py-2">
-                  <input
-                    type="text"
-                    value={row.pendingIssue}
-                    onChange={(event) => handlePendingIssueChange(row.id, event)}
-                    className="w-full border px-2 py-1 resize-none"
-                  />
-                </td>
-                <td className="border px-4 py-2">
-                  <input
-                    type="text"
-                    className="w-full border px-2 py-1 resize-none"
-                  />
-                </td>
-                <td className="border px-4 py-2">
-                  <select
-                    value={row.documentType}
-                    onChange={(event) => handleDocumentTypeChange(row.id, event)}
-                    className="w-full border px-2 py-1"
+            {façadeWorkRows.map((row, index) => (
+              <tr key={index} className="border-t border-gray-200">
+                <td className="p-3 text-left border-r border-gray-300">
+                  {row.slNo}
+                  <button
+                    type="button"
+                    onClick={() => addRow(index)}
+                    className="ml-2 bg-green-500 text-white p-1 rounded text-xs"
                   >
-                    <option value="">Select Document Type</option>
-                    <option value="Sample">Sample</option>
-                    <option value="Laboratory Tests">Laboratory Tests</option>
-                    <option value="Information">Information</option>
-                    <option value="Suppl-Certificate">Suppl-Certificate</option>
-                  </select>
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeRow(index)}
+                    className="ml-2 bg-red-500 text-white p-1 rounded text-xs"
+                  >
+                    -
+                  </button>
                 </td>
-                <td className="border px-4 py-2">
+                <td className="p-3 text-left border-r border-gray-300">
                   <input
                     type="text"
-                    className="w-full border px-2 py-1 resize-none"
+                    value={row.item}
+                    onChange={(e) => {
+                      const newRows = [...façadeWorkRows];
+                      newRows[index].item = e.target.value;
+                      setFaçadeWorkRows(newRows);
+                    }}
+                    placeholder="Item"
+                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
                   />
                 </td>
-                <td className="border px-4 py-2">
-                  <select
-                    value={row.status}
-                    onChange={(event) => handleStatusChange(row.id, event)}
-                    className={`w-full border px-2 py-1 ${row.status === 'Pending' ? 'bg-yellow-200' : row.status === 'Closed' ? 'bg-green-200' : 'bg-orange-200'}`}
-                  >
-                    <option value="Pending" className="bg-yellow-200">Pending</option>
-                    <option value="Closed" className="bg-green-200">Closed</option>
-                    <option value="Open" className="bg-orange-200">Open</option>
-                  </select>
+                <td className="p-3 text-left border-r border-gray-300">
+                  <input
+                    type="text"
+                    value={row.docs}
+                    onChange={(e) => {
+                      const newRows = [...façadeWorkRows];
+                      newRows[index].docs = e.target.value;
+                      setFaçadeWorkRows(newRows);
+                    }}
+                    placeholder="Documents/Samples"
+                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+                  />
                 </td>
-                <td className="border px-4 py-2">
-                  <button className="bg-red-500 text-white font-bold py-2 px-4" onClick={() => handleDeleteRow(row.id)}>Delete</button>
+                <td className="p-3 text-left border-r border-gray-300">
+                  <input
+                    type="text"
+                    value={row.docType}
+                    onChange={(e) => {
+                      const newRows = [...façadeWorkRows];
+                      newRows[index].docType = e.target.value;
+                      setFaçadeWorkRows(newRows);
+                    }}
+                    placeholder="Document Type"
+                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+                  />
+                </td>
+                <td className="p-3 text-left border-r border-gray-300">
+                  <select
+                    value={row.comment}
+                    onChange={(e) => {
+                      const newRows = [...façadeWorkRows];
+                      newRows[index].comment = e.target.value;
+                      setFaçadeWorkRows(newRows);
+                    }}
+                    className={`w-full p-2 border rounded-md shadow-sm sm:text-sm ${
+                      row.comment === 'Done'
+                        ? 'bg-green-100'
+                        : row.comment === 'Not Done'
+                        ? 'bg-red-100'
+                        : row.comment === 'Partially Done'
+                        ? 'bg-orange-100'
+                        : row.comment === 'Not Applicable'
+                        ? 'bg-blue-100'
+                        : ''
+                    }`}
+                  >
+                    <option value="">Select</option>
+                    <option value="Done" className="text-green-600">Done</option>
+                    <option value="Not Done" className="text-red-600">Not Done</option>
+                    <option value="Partially Done" className="text-orange-600">Partially Done</option>
+                    <option value="Not Applicable" className="text-blue-600">Not Applicable</option>
+                  </select>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleSubmit}>
-          Submit
-        </button>
       </div>
+      <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save</button>
+
+     
+      
     </div>
-    </div>
-    
   );
 };
 
-export default MaterialApprovedTable;
+export default MaterialApproved;

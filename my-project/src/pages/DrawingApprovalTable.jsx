@@ -1,175 +1,314 @@
 import React, { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { FaTrash } from 'react-icons/fa'; // Import trash icon from react-icons
 
+const EmptyTable = () => {
+  // Dropdown options for each column
+  const locationTypes = [
+    'Tower',
+    'Refuge',
+    'Podium',
+    'Entrance',
+    'Terrace',
+    'Curtain Wall',
+    'Doors',
+    'General'
+  ];
+  const documentTypes = [
+    'Cont-Drawings',
+    'Cont-Strl Cals',
+    'Cont-RFI',
+    'Cont-Reports',
+    'Cont-Pre-Qualification',
+    'Cont-Materials',
+    'Arch-Comments-Post-Tender',
+    'Client Comments- Post Tender',
+    'BES MOM',
+    'Received MOM'
+  ];
+  const stage1Options = ['Shop Drawings', 'Strl Cals', 'Fabrication Drawings'];
+  const revisionNos = ['R0', 'R1', 'R2', 'R3', 'R4', 'R5'];
+  const status1Options = [
+    'Open',
+    'Close',
+    'In_Progress',
+    'Pending',
+    'Applicable',
+    'Not Applicable'
+  ];
+  const besCommentsOptions = [
+    'Issued',
+    'Reviewed',
+    'Approved',
+    'Approved With Comments',
+    'Re-Submit',
+    'Received'
+  ];
 
-const DrawingApprovalTable = () => {
-  const [rows, setRows] = useState([
-    { id: 1, submissionDate: null, approvalDate: null, pendingIssue: '', status: 'Pending' }
-  ]);
+  // State to hold table rows
+  const [tableRows, setTableRows] = useState([]);
 
-  const handleSubmissionDateChange = (date, index) => {
-    const newRows = [...rows];
-    newRows[index].submissionDate = date;
-    setRows(newRows);
+  // State to hold selected values
+  const [selectedValues, setSelectedValues] = useState({
+    locationType: '',
+    documentType: '',
+    stage1: '',
+    revisionNo: '',
+    status1: '',
+    besComments: ''
+  });
+
+  // Handle input change for dropdowns
+  const handleDropdownChange = (e, fieldName) => {
+    setSelectedValues({ ...selectedValues, [fieldName]: e.target.value });
   };
 
-  const handleApprovalDateChange = (date, index) => {
-    const newRows = [...rows];
-    newRows[index].approvalDate = date;
-    setRows(newRows);
-  };
-
-  const handlePendingIssueChange = (event, index) => {
-    const newRows = [...rows];
-    newRows[index].pendingIssue = event.target.value;
-    setRows(newRows);
-  };
-
-  const handleStatusChange = (event, index) => {
-    const newRows = [...rows];
-    newRows[index].status = event.target.value;
-    setRows(newRows);
-  };
-
+  // Handle Add button click
   const handleAddRow = () => {
-    const newRow = {
-      id: rows.length + 1,
-      submissionDate: null,
-      approvalDate: null,
-      pendingIssue: '',
-      status: 'Pending'
-    };
-    setRows([...rows, newRow]);
+    // Validate if all fields are selected
+    if (
+      selectedValues.locationType &&
+      selectedValues.documentType &&
+      selectedValues.stage1 &&
+      selectedValues.revisionNo &&
+      selectedValues.status1 &&
+      selectedValues.besComments
+    ) {
+      // Create new row object
+      const newRow = {
+        id: tableRows.length + 1, // Unique ID (you can use uuid if needed)
+        locationType: selectedValues.locationType,
+        documentType: selectedValues.documentType,
+        stage1: selectedValues.stage1,
+        revisionNo: selectedValues.revisionNo,
+        status1: selectedValues.status1,
+        besComments: selectedValues.besComments
+      };
+
+      // Add new row to tableRows state
+      setTableRows([...tableRows, newRow]);
+
+      // Clear selected values state
+      setSelectedValues({
+        locationType: '',
+        documentType: '',
+        stage1: '',
+        revisionNo: '',
+        status1: '',
+        besComments: ''
+      });
+    } else {
+      alert('Please select values for all fields before adding.');
+    }
   };
 
+  // Handle Submit button click
+  const handleSubmit = async () => {
+    try {
+      // Make Axios POST request to localhost:3000 (update URL as needed)
+      const response = await axios.post('http://localhost:3000/api/saveData', tableRows);
+      console.log('Response:', response.data); // Log response data if needed
+      alert('Data saved successfully!');
+      // Optionally clear tableRows state or perform other actions after successful save
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('Error saving data. Please try again.'); // Display error message
+    }
+  };
+
+  // Handle Delete button click
   const handleDeleteRow = (id) => {
-    const newRows = rows.filter((row) => row.id !== id);
-    setRows(newRows);
-  };
-
-  const handleSubmit = () => {
-    // Your submit logic goes here
-    console.log('Form submitted');
+    if (window.confirm('Are you sure you want to delete this row?')) {
+      const updatedRows = tableRows.filter((row) => row.id !== id);
+      setTableRows(updatedRows);
+    }
   };
 
   return (
-    <div className="container">
-      <div className="flex justify-between items-center mb-4">
-        <Link to="/">
-          <button className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-        BES Consultants
-                  </button>
-        </Link>
-        <div className="flex space-x-4">
-          <Link to="/qaqc">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-              QAQC
-            </button>
-          </Link>
-          <Link to="/material">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-              Material
-            </button>
-          </Link>
-          <Link to="/drawing">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-              Drawing
-            </button>
-          </Link>
-        </div>
-      </div>
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="bg-gray-200 w-1/6 p-4 h-full">
-        {/* Sidebar content */}
-        <h2 className="text-xl font-bold mb-4">Projects</h2>
-        {/* Placeholder for empty sidebar */}
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 container mx-auto">
-        <h1 className="text-3xl font-bold text-teal-500 mb-4">Drawing Material Approved</h1>
-        <button className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleAddRow}>
-          <FontAwesomeIcon icon={faPlus} /> Add
-        </button>
-        <table className="table-auto w-full">
+    <div className="max-w-full overflow-x-auto">
+      <h2 className="text-2xl font-bold mb-4">Drawing Approval Table</h2>
+      <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <table className="min-w-full bg-white">
           <thead>
             <tr>
-              <th className="px-4 py-2">Sr.no.</th>
-              <th className="px-4 py-2">Facade Reference</th>
-              <th className="px-4 py-2">Submission Date</th>
-              <th className="px-4 py-2">Approval Date</th>
-              <th className="px-4 py-2">Reference Link</th>
-              <th className="px-4 py-2">Pending Issue</th>
-              <th className="px-4 py-2" style={{ width: "200px" }}>Status</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Location Type
+              </th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Document Type
+              </th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Stage 1
+              </th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Revision No.
+              </th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Status 1
+              </th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                BES Comments
+              </th>
+              <th className="px-6 py-3 bg-gray-100 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {rows.map((row, index) => (
+          <tbody className="bg-white divide-y divide-gray-200">
+            {/* Existing rows */}
+            {tableRows.map((row) => (
               <tr key={row.id}>
-                <td className="border px-4 py-2">{row.id}</td>
-                <td className="border px-4 py-2">
-                  <input type="text" className="w-full border px-2 py-1 resize-none" />
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  {row.locationType}
                 </td>
-                <td className="border px-4 py-2">
-                  <DatePicker
-                    selected={row.submissionDate}
-                    onChange={(date) => handleSubmissionDateChange(date, index)}
-                    className="w-full border px-2 py-1"
-                    dateFormat="dd/MM/yyyy"
-                  />
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  {row.documentType}
                 </td>
-                <td className="border px-4 py-2">
-                  <DatePicker
-                    selected={row.approvalDate}
-                    onChange={(date) => handleApprovalDateChange(date, index)}
-                    className="w-full border px-2 py-1"
-                    dateFormat="dd/MM/yyyy"
-                  />
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  {row.stage1}
                 </td>
-                <td className="border px-4 py-2">
-                  <a href="#">Link{row.id}</a>
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  {row.revisionNo}
                 </td>
-                <td className="border px-4 py-2">
-                  <input
-                    type="text"
-                    className="w-full border px-2 py-1 resize-none"
-                    value={row.pendingIssue}
-                    onChange={(event) => handlePendingIssueChange(event, index)}
-                  />
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  {row.status1}
                 </td>
-                <td className="border px-4 py-2">
-                  <select
-                    value={row.status}
-                    onChange={(event) => handleStatusChange(event, index)}
-                    className={`w-full border px-2 py-1 ${row.status === 'Pending' ? 'bg-yellow-200' : row.status === 'Closed' ? 'bg-green-200' : 'bg-orange-200'}`}
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  {row.besComments}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                  <button
+                    onClick={() => handleDeleteRow(row.id)}
+                    className="text-red-600 hover:text-red-900 focus:outline-none"
                   >
-                    <option value="Pending" className="bg-yellow-200">Pending</option>
-                    <option value="Closed" className="bg-green-200">Closed</option>
-                    <option value="Open" className="bg-orange-200">Open</option>
-                  </select>
-                </td>
-                <td className="border px-4 py-2">
-                  <button className="bg-red-500 text-white font-bold py-2 px-4" onClick={() => handleDeleteRow(row.id)}>
-                     Delete
+                    <FaTrash />
                   </button>
                 </td>
               </tr>
             ))}
+
+            {/* Input row with dropdowns */}
+            <tr>
+              {/* Location Type Dropdown */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                <select
+                  value={selectedValues.locationType}
+                  onChange={(e) => handleDropdownChange(e, 'locationType')}
+                  className="border border-gray-300 px-3 py-1 rounded-md w-full focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                >
+                  <option value="">Select...</option>
+                  {locationTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Document Type Dropdown */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                <select
+                  value={selectedValues.documentType}
+                  onChange={(e) => handleDropdownChange(e, 'documentType')}
+                  className="border border-gray-300 px-3 py-1 rounded-md w-full focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                >
+                  <option value="">Select...</option>
+                  {documentTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Stage 1 Dropdown */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                <select
+                  value={selectedValues.stage1}
+                  onChange={(e) => handleDropdownChange(e, 'stage1')}
+                  className="border border-gray-300 px-3 py-1 rounded-md w-full focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                >
+                  <option value="">Select...</option>
+                  {stage1Options.map((stage) => (
+                    <option key={stage} value={stage}>
+                      {stage}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Revision No. Dropdown */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                <select
+                  value={selectedValues.revisionNo}
+                  onChange={(e) => handleDropdownChange(e, 'revisionNo')}
+                  className="border border-gray-300 px-3 py-1 rounded-md w-full focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                >
+                  <option value="">Select...</option>
+                  {revisionNos.map((rev) => (
+                    <option key={rev} value={rev}>
+                      {rev}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Status 1 Dropdown */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                <select
+                  value={selectedValues.status1}
+                  onChange={(e) => handleDropdownChange(e, 'status1')}
+                  className="border border-gray-300 px-3 py-1 rounded-md w-full focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                >
+                  <option value="">Select...</option>
+                  {status1Options.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* BES Comments Dropdown */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200">
+                <select
+                  value={selectedValues.besComments}
+                  onChange={(e) => handleDropdownChange(e, 'besComments')}
+                  className="border border-gray-300 px-3 py-1 rounded-md w-full focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                >
+                  <option value="">Select...</option>
+                  {besCommentsOptions.map((comment) => (
+                    <option key={comment} value={comment}>
+                      {comment}
+                    </option>
+                  ))}
+                </select>
+              </td>
+
+              {/* Empty cell for delete button */}
+              <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200"></td>
+            </tr>
           </tbody>
         </table>
-        <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleSubmit}>
+      </div>
+
+      {/* Add and Submit buttons */}
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleAddRow}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Add
+        </button>
+        <button
+          onClick={handleSubmit}
+          className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
           Submit
         </button>
       </div>
     </div>
-    </div>
   );
 };
 
-export default DrawingApprovalTable;
+export default EmptyTable;

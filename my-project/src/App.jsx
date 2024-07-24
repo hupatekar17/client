@@ -14,6 +14,7 @@ export default function App() {
         <Route path="/qaqc" element={<QAQC />} />
         <Route path="/drawing" element={<DrawingApprovalTable />} />
         <Route path="/material" element={<MaterialApprovedTable />} />
+
       </Routes>
     </BrowserRouter>
   );
