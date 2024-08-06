@@ -1,49 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Outlet, useParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { PieChart } from 'react-minimal-pie-chart';
+import axios from 'axios';
 import 'animate.css/animate.min.css';
 
-const HomePage = () => {
+const ProjectName = () => {
   const [counts, setCounts] = useState({
     qaqc: { completed: 0, pending: 0, ongoing: 0 },
     material: { completed: 0, pending: 0, ongoing: 0 },
     drawing: { completed: 0, pending: 0, ongoing: 0 }
   });
-
   const [darkMode, setDarkMode] = useState(false);
+  const [projectName, setProjectName] = useState('');
+  const { id } = useParams(); // Get project ID from route params
 
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
-  
 
   useEffect(() => {
-    const mockData = {
-      qaqc: { completed: 12, pending: 5, ongoing: 3 },
-      material: { completed: 20, pending: 3, ongoing: 7 },
-      drawing: { completed: 15, pending: 8, ongoing: 5 }
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/projects/${id}`);
+        const data = response.data;
+        console.log(response.data)
+      } catch (error) {
+        console.error('Failed to fetch project data:', error);
+      }
     };
 
-    const timeout = setTimeout(() => {
-      setCounts(mockData);
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, []);
+    fetchData();  
+  }, [id]); // Dependency on project ID
 
   return (
     <div className={`flex h-screen ${darkMode ? 'dark' : ''}`}>
       {/* Dark Mode Toggle Button */}
-      {/* <div className="fixed bottom-4 right-4 z-10">
-        <button
-          onClick={toggleDarkMode}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full"
-        >
-          {darkMode ? 'Light Mode' : 'Dark Mode'}
-        </button>
-      </div> */}
+      
 
       {/* Sidebar */}
       <div className="bg-gray-200 w-1/5 p-4">
@@ -52,10 +46,16 @@ const HomePage = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-8">
+        {/* Project Header */}
+        <h1 className="text-2xl font-bold mb-4">{projectName}</h1>
+
+        <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Generate Report</button>
+
+
         {/* Dashboard Columns */}
         <div className="grid grid-cols-3 gap-8">
           {/* QAQC Column */}
-          
+          <Link to="qaqc">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-lg font-bold mb-4">QAQC</h2>
               <div className="flex justify-between mb-2">
@@ -78,10 +78,10 @@ const HomePage = () => {
                 className="animate__animated animate__fadeIn"
               />
             </div>
-          
+          </Link>
 
           {/* Material Column */}
-         
+          <Link to="material">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-lg font-bold mb-4">Material Approved</h2>
               <div className="flex justify-between mb-2">
@@ -104,9 +104,10 @@ const HomePage = () => {
                 className="animate__animated animate__fadeIn"
               />
             </div>
+          </Link>
 
           {/* Drawing Column */}
-  
+          <Link to="drawing">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-lg font-bold mb-4">Drawing Approval</h2>
               <div className="flex justify-between mb-2">
@@ -129,11 +130,18 @@ const HomePage = () => {
                 className="animate__animated animate__fadeIn"
               />
             </div>
-          
+          </Link>
+
+              
+
         </div>
+        <div>
+          <Outlet/>  
+        </div>  
+
       </div>
     </div>
   );
 };
 
-export default HomePage;
+export default ProjectName;
