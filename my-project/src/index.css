@@ -33,3 +33,61 @@ body {
     color: #e0e0e0;
   }
   
+/* styles.css or similar file */
+
+/* Print Styles */
+/* styles.css or similar file */
+
+/* Print Styles */
+/* Print Styles */
+@media print {
+  .print-exclude {
+    display: none; /* Hide elements you don't want to print */
+  }
+
+  body {
+    background: white; /* White background for print */
+    color: black; /* Black text color for print */
+    font-family: Arial, sans-serif; /* Ensure a readable font */
+  }
+
+  @page {
+    size: portrait; /* Set page to portrait */
+   
+  }
+
+  /* Ensure table takes up the full width of the page */
+  table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapse borders */
+    page-break-inside: auto; /* Avoid page breaks inside the table */
+    margin-bottom: 1em; /* Add some space below the table */
+  }
+
+  /* Table header and cell styles */
+  th, td {
+    /* padding: 15px;  Increase padding for better readability */
+    text-align: left; /* Align text to the left */
+    /* border: 1px solid black; Add border */
+    word-wrap: break-word; /* Ensure text wraps */
+    overflow-wrap: break-word; /* Additional wrapping */
+    font-size: 14px; /* Increase font size for readability */
+  }
+
+  /* Ensure PieCharts and other elements fit well */
+  .pie-chart-container {
+    color: inherit !important;
+    background-color: inherit !important;
+  }
+
+  .pie-chart-container svg {
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important; /* Ensure charts fit within print area */
+  }
+
+  /* Remove animations for print */
+  .animate__animated {
+    animation: none !important;
+  }
+}

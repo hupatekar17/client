@@ -5,6 +5,7 @@ import { PieChart } from 'react-minimal-pie-chart';
 import axios from 'axios';
 import 'animate.css/animate.min.css';
 
+
 const ProjectName = () => {
   const [counts, setCounts] = useState({
     qaqc: { completed: 0, pending: 0, ongoing: 0 },
@@ -15,11 +16,17 @@ const ProjectName = () => {
   const [projectName, setProjectName] = useState('');
   const { id } = useParams(); // Get project ID from route params
 
-  // Function to toggle dark mode
+  // Function to toggle dark mode.
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
-
+  const handlePrint = () => {
+    // Add a specific class to the body or another container to apply print styles
+    document.body.classList.add('printable');
+    window.print();
+    document.body.classList.remove('printable');
+  };
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,13 +41,14 @@ const ProjectName = () => {
     fetchData();  
   }, [id]); // Dependency on project ID
 
+  
   return (
     <div className={`flex h-screen ${darkMode ? 'dark' : ''}`}>
       {/* Dark Mode Toggle Button */}
       
 
       {/* Sidebar */}
-      <div className="bg-gray-200 w-1/5 p-4">
+      <div className="bg-gray-200 w-1/5 p-4 print-exclude">
         <Sidebar />
       </div>
 
@@ -49,7 +57,7 @@ const ProjectName = () => {
         {/* Project Header */}
         <h1 className="text-2xl font-bold mb-4">{projectName}</h1>
 
-        <button type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Generate Report</button>
+        <button type="button" onClick={handlePrint} class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Generate Report</button>
 
 
         {/* Dashboard Columns */}

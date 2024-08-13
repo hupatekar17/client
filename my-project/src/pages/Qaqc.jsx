@@ -8,19 +8,27 @@ const QAQC = ({ projectId }) => {
 
   useEffect(() => {
     const fetchQAQCData = async () => {
+      setLoading(true);
+      setError(null); // Reset error state on new request
+
       try {
         const response = await axios.get(`http://localhost:4000/api/projects/${projectId}/qaqc`);
-        console.log(response.data); // Check the response data
-        setData(response.data.qaqcEntries || []); // Set default to empty array if no entries found
+        console.log('API Response:', response.data); // Check the response data
+        
+        // Adjust this line based on the actual API response structure
+        setData(response.data.qaqcEntries || response.data || []); 
+
         setLoading(false);
       } catch (err) {
-        setError('Error fetching QAQC data');
-        console.log(err)
+        setError('Error fetching QAQC data: ' + err.message);
+        console.error('Error:', err);
         setLoading(false);
       }
     };
 
-    fetchQAQCData();
+    if (projectId) {
+      fetchQAQCData();
+    }
   }, [projectId]);
 
   const handleStatusChange = (index, newStatus) => {
